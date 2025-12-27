@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-selfcheck.json
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv.bak/
+venv.bak/
+
+# ROS 2
+build/
+install/
+log/
+.develspace/
+.installspace/
+*.log
+*.log.*
+
+# Docusaurus
+.node/
+.build/
+.docusaurus/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+.webpack/
+dist/
+out/
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Development
+.pytest_cache/
+.coverage
+htmlcov/
+.pyre/
+.mypy_cache/
+
+# OS
+.DS_Store
+Thumbs.db

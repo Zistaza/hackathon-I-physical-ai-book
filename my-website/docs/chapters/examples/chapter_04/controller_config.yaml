@@ -1,0 +1,53 @@
+# Controller configuration for the simple humanoid robot
+# This file defines the controllers that can be used with the robot
+
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    # Joint state broadcaster - publishes joint states
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    # Example position controllers for the humanoid robot joints
+    left_leg_controller:
+      type: position_controllers/JointGroupPositionController
+
+    right_leg_controller:
+      type: position_controllers/JointGroupPositionController
+
+    left_arm_controller:
+      type: position_controllers/JointGroupPositionController
+
+    right_arm_controller:
+      type: position_controllers/JointGroupPositionController
+
+# Configuration for left leg controller
+left_leg_controller:
+  ros__parameters:
+    joints:
+      - left_hip
+      - left_knee
+      - left_ankle
+
+# Configuration for right leg controller
+right_leg_controller:
+  ros__parameters:
+    joints:
+      - right_hip
+      - right_knee
+      - right_ankle
+
+# Configuration for left arm controller
+left_arm_controller:
+  ros__parameters:
+    joints:
+      - left_shoulder
+      - left_elbow
+
+# Configuration for right arm controller
+right_arm_controller:
+  ros__parameters:
+    joints:
+      - right_shoulder
+      - right_elbow

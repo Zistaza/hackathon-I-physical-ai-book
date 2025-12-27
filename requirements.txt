@@ -1,0 +1,10 @@
+# ROS 2 Python dependencies
+rclpy
+ros2
+
+# Docusaurus documentation
+# Note: Docusaurus runs on Node.js, not Python
+# Documentation will be built separately
+
+# Testing
+pytest
