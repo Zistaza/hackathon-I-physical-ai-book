@@ -1,0 +1,140 @@
+# API Contract: Educational Module Interactive Features
+
+## Overview
+This contract defines potential API endpoints for interactive features in the NVIDIA Isaac educational module, such as exercise validation or progress tracking.
+
+## Base URL
+```
+https://api.example.com/isaac-robot-education
+```
+
+## Authentication
+All endpoints require authentication via JWT token in the Authorization header:
+```
+Authorization: Bearer <jwt_token>
+```
+
+## Endpoints
+
+### 1. Exercise Validation
+**POST** `/api/v1/exercises/{exerciseId}/validate`
+
+Validate a student's solution to a hands-on exercise.
+
+#### Request
+```json
+{
+  "student_solution": "string",
+  "exercise_id": "string",
+  "module_id": "string",
+  "chapter_id": "string"
+}
+```
+
+#### Response (200 OK)
+```json
+{
+  "exercise_id": "string",
+  "is_correct": "boolean",
+  "feedback": "string",
+  "next_steps": ["string"],
+  "score": "number"
+}
+```
+
+### 2. Progress Tracking
+**POST** `/api/v1/progress`
+
+Track student progress through the module.
+
+#### Request
+```json
+{
+  "user_id": "string",
+  "module_id": "string",
+  "chapter_id": "string",
+  "section_completed": "string",
+  "completion_percentage": "number",
+  "time_spent": "number"
+}
+```
+
+#### Response (200 OK)
+```json
+{
+  "progress_id": "string",
+  "user_id": "string",
+  "module_id": "string",
+  "completion_percentage": "number",
+  "last_updated": "timestamp"
+}
+```
+
+### 3. Code Example Execution (Simulation)
+**POST** `/api/v1/code-examples/{exampleId}/execute`
+
+Simulate execution of code examples for demonstration purposes.
+
+#### Request
+```json
+{
+  "example_id": "string",
+  "parameters": {
+    "param1": "value1"
+  }
+}
+```
+
+#### Response (200 OK)
+```json
+{
+  "example_id": "string",
+  "execution_result": "string",
+  "output": "string",
+  "execution_time": "number",
+  "success": "boolean"
+}
+```
+
+### 4. Resource Download
+**GET** `/api/v1/resources/{resourceId}`
+
+Download additional resources like datasets or simulation files.
+
+#### Query Parameters
+- `format`: Desired format (optional)
+
+#### Response (200 OK)
+- Binary content of the requested resource
+- Content-Type: appropriate for the resource type
+
+## Error Responses
+
+All error responses follow this structure:
+```json
+{
+  "error": {
+    "code": "string",
+    "message": "string",
+    "details": "string"
+  }
+}
+```
+
+### Common Error Codes
+- `AUTHENTICATION_REQUIRED`: 401 - Authentication token missing or invalid
+- `NOT_FOUND`: 404 - Requested resource does not exist
+- `VALIDATION_ERROR`: 400 - Request data does not meet validation requirements
+- `INTERNAL_ERROR`: 500 - Internal server error
+
+## Rate Limiting
+All endpoints are subject to rate limiting:
+- 100 requests per minute per authenticated user
+- 10 requests per minute per unauthenticated user
+
+## Data Validation
+All input data is validated against the following rules:
+- String fields: 1-5000 characters
+- Numeric fields: within appropriate ranges
+- ID fields: alphanumeric with hyphens and underscores only
+- Timestamps: ISO 8601 format

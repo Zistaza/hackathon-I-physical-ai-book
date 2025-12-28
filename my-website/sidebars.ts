@@ -24,6 +24,17 @@ const sidebars = {
         'modules/digital-twin/chapter-4-sensor-simulation-for-humanoid-robots',
       ],
     },
+    {
+     type: 'category',
+     label: 'Module 3: The AI-Robot Brain (NVIDIA Isaac™)',
+     items: [
+    'module3-ai-robot-brain/intro-isaac-sim',
+    'module3-ai-robot-brain/isaac-ros-vslam',
+    'module3-ai-robot-brain/nav2-path-planning',
+    'module3-ai-robot-brain/integration-deployment',
+     ],
+    },
+
   ],
 };
 
