@@ -34,6 +34,17 @@ const sidebars = {
     'module3-ai-robot-brain/integration-deployment',
      ],
     },
+    {
+    type: 'category',
+    label: 'Module 4: Vision-Language-Action (VLA) in Physical AI & Humanoid Robotics',
+    items: [
+    'module4-vla-physical-ai/intro-vla',
+    'module4-vla-physical-ai/voice-to-action',
+    'module4-vla-physical-ai/cognitive-planning-llms',
+    'module4-vla-physical-ai/capstone-autonomous-humanoid',
+     ],
+     },
+
 
   ],
 };

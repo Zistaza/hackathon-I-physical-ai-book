@@ -1,0 +1,47 @@
+VLA System Architecture Diagram
+===============================
+
+This is a textual representation of the VLA (Vision-Language-Action) system architecture:
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                        Autonomous Humanoid System                               │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐            │
+│  │   Voice Input   │───▶│  Language        │───▶│   Cognitive     │            │
+│  │   Processing    │    │  Processing      │    │   Planning      │            │
+│  │                 │    │                  │    │                 │            │
+│  │ - Microphones   │    │ - Whisper ASR    │    │ - LLM Reasoning │            │
+│  │ - Audio Buffer  │    │ - NLP Pipeline   │    │ - Task Planning │            │
+│  │ - Preprocessing │    │ - Intent Parser  │    │ - Decomposition │            │
+│  └─────────────────┘    └──────────────────┘    └─────────────────┘            │
+│            │                       │                       │                    │
+│            ▼                       ▼                       ▼                    │
+│  ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐            │
+│  │   Vision        │    │   World State    │    │   Action        │            │
+│  │   Processing    │───▶│   Management     │───▶│   Execution     │            │
+│  │                 │    │                  │    │                 │            │
+│  │ - Object Det.   │    │ - Environment    │    │ - Navigation    │            │
+│  │ - Scene Und.    │    │ - Robot Pos.     │    │ - Manipulation  │            │
+│  │ - Tracking      │    │ - Object Info.   │    │ - Control       │            │
+│  └─────────────────┘    └──────────────────┘    └─────────────────┘            │
+│            │                       │                       │                    │
+│            └───────────────────────┼───────────────────────┘                    │
+│                                    │                                            │
+│                           ┌─────────────────┐                                   │
+│                           │   Integration   │                                   │
+│                           │   Layer         │                                   │
+│                           │                 │                                   │
+│                           │ - Coordination  │                                   │
+│                           │ - Synchronization│                                  │
+│                           │ - Safety Checks │                                   │
+│                           └─────────────────┘                                   │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+Voice Command Flow:
+Voice → [Speech Recognition] → [Language Understanding] → [Cognitive Planning] → [Action Execution]
+  ↓           ↓                       ↓                        ↓                       ↓
+[Audio]  [Text Processing]      [LLM Reasoning]         [Robot Control]      [Physical Action]
+
+[Camera] → [Vision Processing] → [World State] ← [Action Context] ← [Planning Feedback]
+  ↓           ↓                   ↓              ↓                      ↓
+[Env]    [Object Detection]  [World Model]  [Context Updates]    [Action Validation]
