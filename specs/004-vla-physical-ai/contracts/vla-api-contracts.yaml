@@ -1,0 +1,407 @@
+# API Contracts: Vision-Language-Action (VLA) System
+
+## Overview
+This document defines the API contracts for the Vision-Language-Action (VLA) system as specified in the feature requirements. These contracts outline the interfaces between different components of the VLA system and the expected inputs, outputs, and error handling.
+
+## 1. Voice-to-Action Pipeline API
+
+### 1.1 Speech Recognition Endpoint
+```
+POST /api/v1/speech/recognize
+```
+
+**Description**: Converts audio input to text using OpenAI Whisper
+
+**Request**:
+- Content-Type: multipart/form-data or audio/wav
+- Body: Audio file containing speech
+
+**Request Parameters**:
+- `audio_file`: The audio file to transcribe (required)
+- `language` (optional): Language code (e.g., "en", "es")
+- `temperature` (optional): Temperature for sampling (default: 0.0)
+
+**Response**:
+- Status: 200 OK
+- Content-Type: application/json
+
+```json
+{
+  "text": "The transcribed text from the audio",
+  "confidence": 0.95,
+  "duration": 3.5,
+  "language": "en"
+}
+```
+
+**Error Responses**:
+- 400: Invalid audio file format
+- 415: Unsupported media type
+- 500: Processing error
+
+### 1.2 Command Interpretation Endpoint
+```
+POST /api/v1/command/interpret
+```
+
+**Description**: Interprets natural language command and generates action sequence
+
+**Request**:
+- Content-Type: application/json
+- Body:
+```json
+{
+  "command": "Please navigate to the kitchen and pick up the red cup",
+  "context": {
+    "robot_position": {"x": 0.0, "y": 0.0, "theta": 0.0},
+    "environment_objects": [
+      {"id": "red_cup", "type": "cup", "position": {"x": 5.0, "y": 3.0}},
+      {"id": "kitchen", "type": "room", "position": {"x": 4.0, "y": 2.0}}
+    ]
+  }
+}
+```
+
+**Response**:
+- Status: 200 OK
+- Content-Type: application/json
+
+```json
+{
+  "action_sequence": [
+    {
+      "action_type": "navigate",
+      "parameters": {"target_position": {"x": 4.0, "y": 2.0}},
+      "description": "Navigate to kitchen"
+    },
+    {
+      "action_type": "identify_object",
+      "parameters": {"object_type": "cup", "color": "red"},
+      "description": "Identify the red cup"
+    },
+    {
+      "action_type": "grasp_object",
+      "parameters": {"object_id": "red_cup"},
+      "description": "Grasp the red cup"
+    }
+  ],
+  "confidence": 0.89,
+  "reasoning": "The command requires navigation to the kitchen, identification of the red cup, and grasping it."
+}
+```
+
+**Error Responses**:
+- 400: Invalid command format
+- 422: Command cannot be interpreted
+- 500: LLM processing error
+
+## 2. Vision Processing API
+
+### 2.1 Object Detection Endpoint
+```
+POST /api/v1/vision/detect_objects
+```
+
+**Description**: Detects objects in an image and returns their positions and classifications
+
+**Request**:
+- Content-Type: multipart/form-data or image/jpeg
+- Body: Image file for object detection
+
+**Request Parameters**:
+- `image_file`: The image to analyze (required)
+- `confidence_threshold` (optional): Minimum confidence for detections (default: 0.5)
+
+**Response**:
+- Status: 200 OK
+- Content-Type: application/json
+
+```json
+{
+  "objects": [
+    {
+      "id": "obj_001",
+      "class": "cup",
+      "confidence": 0.92,
+      "bbox": {"x_min": 100, "y_min": 150, "x_max": 200, "y_max": 250},
+      "position_3d": {"x": 1.2, "y": 0.8, "z": 0.9}
+    },
+    {
+      "id": "obj_002",
+      "class": "table",
+      "confidence": 0.87,
+      "bbox": {"x_min": 50, "y_min": 300, "x_max": 400, "y_max": 500},
+      "position_3d": {"x": 0.0, "y": 0.0, "z": 0.0}
+    }
+  ],
+  "timestamp": "2025-12-28T10:30:00Z"
+}
+```
+
+**Error Responses**:
+- 400: Invalid image format
+- 415: Unsupported media type
+- 500: Detection processing error
+
+### 2.2 Scene Analysis Endpoint
+```
+POST /api/v1/vision/analyze_scene
+```
+
+**Description**: Analyzes a scene to understand spatial relationships and navigable areas
+
+**Request**:
+- Content-Type: application/json
+- Body:
+```json
+{
+  "image_file": "base64_encoded_image_data",
+  "robot_position": {"x": 0.0, "y": 0.0, "theta": 0.0}
+}
+```
+
+**Response**:
+- Status: 200 OK
+- Content-Type: application/json
+
+```json
+{
+  "navigable_areas": [
+    {"x_min": -5.0, "y_min": -5.0, "x_max": 5.0, "y_max": 5.0}
+  ],
+  "obstacles": [
+    {"type": "furniture", "position": {"x": 2.0, "y": 1.0}, "size": {"width": 1.0, "depth": 0.8}}
+  ],
+  "landmarks": [
+    {"name": "kitchen", "position": {"x": 4.0, "y": 2.0}},
+    {"name": "door", "position": {"x": 0.0, "y": 5.0}}
+  ],
+  "free_space_map": "base64_encoded_grid_map"
+}
+```
+
+**Error Responses**:
+- 400: Invalid input format
+- 500: Analysis processing error
+
+## 3. Action Execution API
+
+### 3.1 Execute Action Sequence Endpoint
+```
+POST /api/v1/action/execute_sequence
+```
+
+**Description**: Executes a sequence of actions on the robot
+
+**Request**:
+- Content-Type: application/json
+- Body:
+```json
+{
+  "action_sequence": [
+    {
+      "action_type": "navigate",
+      "parameters": {"target_position": {"x": 4.0, "y": 2.0}}
+    },
+    {
+      "action_type": "identify_object",
+      "parameters": {"object_type": "cup", "color": "red"}
+    },
+    {
+      "action_type": "grasp_object",
+      "parameters": {"object_id": "red_cup"}
+    }
+  ],
+  "timeout": 60
+}
+```
+
+**Response**:
+- Status: 200 OK
+- Content-Type: application/json
+
+```json
+{
+  "execution_id": "exec_12345",
+  "status": "in_progress",
+  "estimated_completion": 45,
+  "action_results": [
+    {
+      "action_index": 0,
+      "action_type": "navigate",
+      "status": "completed",
+      "result": {"final_position": {"x": 3.98, "y": 2.02}}
+    }
+  ]
+}
+```
+
+**Error Responses**:
+- 400: Invalid action sequence
+- 422: Action sequence contains invalid actions
+- 500: Robot execution error
+
+### 3.2 Action Status Check Endpoint
+```
+GET /api/v1/action/status/{execution_id}
+```
+
+**Description**: Checks the status of an ongoing action sequence
+
+**Response**:
+- Status: 200 OK
+- Content-Type: application/json
+
+```json
+{
+  "execution_id": "exec_12345",
+  "status": "completed",
+  "completed_actions": 3,
+  "total_actions": 3,
+  "action_results": [
+    {
+      "action_index": 0,
+      "action_type": "navigate",
+      "status": "completed",
+      "result": {"final_position": {"x": 3.98, "y": 2.02}}
+    },
+    {
+      "action_index": 1,
+      "action_type": "identify_object",
+      "status": "completed",
+      "result": {"object_id": "red_cup", "position": {"x": 4.1, "y": 2.1}}
+    },
+    {
+      "action_index": 2,
+      "action_type": "grasp_object",
+      "status": "completed",
+      "result": {"success": true, "object_grasped": "red_cup"}
+    }
+  ],
+  "timestamp": "2025-12-28T10:32:30Z"
+}
+```
+
+**Error Responses**:
+- 404: Execution ID not found
+- 500: Status check error
+
+## 4. World State Management API
+
+### 4.1 Get Current World State
+```
+GET /api/v1/world_state/current
+```
+
+**Description**: Retrieves the current state of the world including detected objects and robot position
+
+**Response**:
+- Status: 200 OK
+- Content-Type: application/json
+
+```json
+{
+  "timestamp": "2025-12-28T10:30:00Z",
+  "robot_state": {
+    "position": {"x": 4.0, "y": 2.0, "theta": 1.57},
+    "status": "idle",
+    "battery_level": 0.85
+  },
+  "environment_objects": [
+    {
+      "id": "red_cup",
+      "class": "cup",
+      "position": {"x": 4.1, "y": 2.1, "z": 0.9},
+      "properties": {"color": "red", "grasped": true}
+    }
+  ],
+  "navigable_map": "base64_encoded_map_data",
+  "recent_events": [
+    {"type": "object_detected", "timestamp": "2025-12-28T10:29:45Z", "details": "red_cup identified"},
+    {"type": "action_completed", "timestamp": "2025-12-28T10:30:00Z", "details": "grasp_object completed"}
+  ]
+}
+```
+
+**Error Responses**:
+- 500: World state retrieval error
+
+### 4.2 Update World State
+```
+POST /api/v1/world_state/update
+```
+
+**Description**: Updates the world state with new information
+
+**Request**:
+- Content-Type: application/json
+- Body:
+```json
+{
+  "updates": {
+    "robot_position": {"x": 5.0, "y": 3.0, "theta": 0.0},
+    "new_objects": [
+      {
+        "id": "blue_bottle",
+        "class": "bottle",
+        "position": {"x": 5.2, "y": 3.1, "z": 0.8},
+        "confidence": 0.89
+      }
+    ],
+    "removed_objects": ["temp_object_123"],
+    "event_log": [
+      {"type": "object_moved", "timestamp": "2025-12-28T10:31:00Z", "details": "blue_bottle moved"}
+    ]
+  }
+}
+```
+
+**Response**:
+- Status: 200 OK
+- Content-Type: application/json
+
+```json
+{
+  "status": "updated",
+  "timestamp": "2025-12-28T10:31:00Z",
+  "new_world_state_id": "ws_67890"
+}
+```
+
+**Error Responses**:
+- 400: Invalid update format
+- 500: World state update error
+
+## Common Error Response Format
+
+All error responses follow this format:
+```json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": "Additional error details if applicable"
+  }
+}
+```
+
+## Authentication and Authorization
+
+All API endpoints require authentication using API keys or OAuth tokens:
+
+**Header**:
+```
+Authorization: Bearer <access_token>
+X-API-Key: <api_key>
+```
+
+## Rate Limiting
+
+All endpoints are subject to rate limiting:
+- Standard: 100 requests per minute per API key
+- Priority: 500 requests per minute for premium access
+- Burst: Up to 10 requests per second allowed
+
+## Versioning
+
+API versioning is done through the URL path (e.g., `/api/v1/...`) with backward compatibility maintained for at least 6 months after new versions are introduced.

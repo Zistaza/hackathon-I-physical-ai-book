@@ -211,6 +211,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 
 ## Active Technologies
 - Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, Gazebo simulation environment, Unity game engine (002-digital-twin-gazebo-unity)
+- Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, OpenAI Whisper, ROS 2, NVIDIA Isaac SDK, Isaac Sim (004-vla-physical-ai)
+- N/A (Documentation content) (004-vla-physical-ai)
 
 ## Recent Changes
 - 002-digital-twin-gazebo-unity: Added Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, Gazebo simulation environment, Unity game engine
