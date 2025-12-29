@@ -1,12 +1,112 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Docusaurus Style Enhancement
+ *
+ * Global CSS file with bold typography for chapters/content
+ * Import this file in your Docusaurus configuration to apply styles
  */
 
-/* You can override the default Infima variables here. */
+/* Typography improvements */
 :root {
-  --ifm-color-primary: #2e8555;
+  --font-sans: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+}
+
+/* Apply clean sans-serif font globally and bold text */
+body {
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  font-weight: 600; /* bold all main content */
+  color: #4a4a4a;   /* light mode content color */
+}
+
+/* Heading hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700; /* strong bold headings */
+  color: #2b3137;   /* light mode headings */
+}
+
+/* Paragraph styling */
+p {
+  color: #4a4a4a;
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+/* Code block styling */
+code {
+  background-color: #f5f5f5;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-weight: 600;
+}
+
+pre {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-weight: 600;
+}
+
+/* List styling */
+ul, ol {
+  margin: 1rem 0;
+}
+
+ul li, ol li {
+  color: #4a4a4a;
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+
+ul li::marker, ol li::marker {
+  color: #666;
+}
+
+/* Note and tip block styling */
+.note, .tip {
+  border-left: 4px solid #667eea;
+  background-color: #f0f4ff;
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 1rem 0;
+  font-weight: 600;
+}
+
+/* Spacing improvements */
+article {
+  padding: 0 1rem;
+}
+
+section {
+  margin: 1.5rem 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.2rem; }
+  p { font-size: 0.95rem; }
+  pre { padding: 0.8rem; font-size: 0.85rem; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.3rem; }
+  p { font-size: 0.9rem; }
+}
+
+/* Keep your Infima variables and dark mode settings intact */
+:root {
+  --ifm-color-primary: #3b2e85;
   --ifm-color-primary-dark: #29784c;
   --ifm-color-primary-darker: #277148;
   --ifm-color-primary-darkest: #205d3b;
@@ -17,7 +117,7 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* Dark mode primary colors */
 [data-theme='dark'] {
   --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: #21af90;
@@ -27,4 +127,14 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode content text and headings */
+[data-theme='dark'] {
+  body, p, ul li, ol li {
+    color: #e0e0e0; /* readable light color on dark background */
+  }
+  h1, h2, h3, h4, h5, h6 {
+    color: #ffffff; /* bright headings for dark mode */
+  }
 }

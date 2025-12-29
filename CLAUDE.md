@@ -213,6 +213,10 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 - Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, Gazebo simulation environment, Unity game engine (002-digital-twin-gazebo-unity)
 - Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, OpenAI Whisper, ROS 2, NVIDIA Isaac SDK, Isaac Sim (004-vla-physical-ai)
 - N/A (Documentation content) (004-vla-physical-ai)
+- TypeScript/React with Docusaurus 3.x framework + React, Docusaurus core packages, clsx for CSS class management (001-homepage-update)
+- N/A (static content) (001-homepage-update)
+- CSS3, compatible with Docusaurus 3.x + Docusaurus 3.x framework, React components (001-docusaurus-style-enhancement)
+- N/A (CSS styling only) (001-docusaurus-style-enhancement)
 
 ## Recent Changes
 - 002-digital-twin-gazebo-unity: Added Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, Gazebo simulation environment, Unity game engine

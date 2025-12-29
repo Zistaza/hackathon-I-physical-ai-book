@@ -1,0 +1,91 @@
+# Homepage API Contract
+
+## Overview
+This contract defines the interface between the homepage component and the documentation system. Since this is a static site, the "API" consists of URL routing patterns and component interfaces.
+
+## Component Interfaces
+
+### Homepage Component Interface
+```
+Component: Homepage
+Input: None (uses siteConfig from Docusaurus context)
+Output: ReactNode with Hero, Modules, and Hardware sections
+```
+
+### ModuleCard Component Interface
+```
+Component: ModuleCard
+Input: {
+  title: string,
+  subchapters: string[],
+  link: string
+}
+Output: ReactNode (card component with title, subchapters list, and link)
+```
+
+### HardwareCard Component Interface
+```
+Component: HardwareCard
+Input: {
+  title: string,
+  description: string,
+  price: string
+}
+Output: ReactNode (card component with title, description, and price)
+```
+
+## Navigation Contracts
+
+### External Navigation Links
+- `/docs/chapters/intro-ros2` - Main "Start Learning" button
+- `/docs/modules/digital-twin/chapter-1-digital-twins-in-physical-ai` - Digital Twin module link
+- `/docs/module3-ai-robot-brain/intro-isaac-sim` - AI-Robot Brain module link
+- `/docs/module4-vla-physical-ai/intro-vla` - Vision-Language-Action module link
+
+### URL Patterns
+- All documentation links follow the pattern: `/docs/{path-to-documentation}`
+- Links must correspond to existing documentation files
+- All links are relative to the site root
+
+## Data Contracts
+
+### Module Data Structure
+```
+{
+  title: string (required) - Display name of the module
+  subchapters: string[] (required, 4 items) - List of subchapter titles
+  link: string (required) - Path to the module documentation
+}
+```
+
+### Hardware Data Structure
+```
+{
+  title: string (required) - Display name of the hardware
+  description: string (required) - Detailed description
+  price: string (required) - Price information
+}
+```
+
+## Responsive Behavior Contracts
+
+### Grid Layout Requirements
+- Modules section: 4 columns on desktop (col--3), 1 column on mobile
+- Hardware section: 3 columns on desktop (col--4), 1 column on mobile
+- All cards maintain consistent spacing regardless of screen size
+
+## CSS Class Contracts
+
+### Required CSS Classes
+- `heroBanner`: Container for the hero section
+- `buttons`: Container for CTA buttons
+- `card`: Base card styling
+- `card__header`, `card__body`, `card__footer`: Card section styling
+- Responsive grid classes: `col--3`, `col--4`, `margin-bottom--lg`
+
+## Error Handling Contracts
+
+### Missing Data Handling
+- If subchapters array is empty, display "No subchapters listed"
+- If link is invalid, display the card but with disabled navigation
+- If description is missing for hardware, display "Description coming soon"

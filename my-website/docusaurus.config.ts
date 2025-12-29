@@ -5,9 +5,9 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Physical AI & Humanoid Robotics Textbook', // updated site title
-  tagline: 'Dinosaurs are cool', // you can also update this
-  favicon: 'img/favicon.ico',
+  title: 'Physical AI & Humanoid Robotics Book', // updated site title
+  tagline: 'Bridging Digital Brain to Physical Body', // you can also update this
+  favicon: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/Types_of_Artificial_Intelligence.jpg',
 
   future: {
     v4: true,
@@ -48,10 +48,10 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Physical AI & Humanoid Robotics Textbook', // updated navbar title
+      title: 'Physical AI & Humanoid Robotics Book', // updated navbar title
       logo: {
         alt: 'Physical AI & Humanoid Robotics Textbook Logo', // optional: update logo alt text
-        src: 'img/logo.svg',
+        src: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/Types_of_Artificial_Intelligence.jpg',
       },
       items: [
         {
@@ -68,7 +68,7 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'dark',
+      style: 'light',
       links: [
         {
           title: 'Docs',
