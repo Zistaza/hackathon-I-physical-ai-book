@@ -44,6 +44,12 @@ const sidebars = {
     'module4-vla-physical-ai/capstone-autonomous-humanoid',
      ],
      },
+     {
+     type: 'category',
+     label: 'Hardware Setup',
+     items: ['hardware-requirements'],
+     },
+
 
 
   ],
