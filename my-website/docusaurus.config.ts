@@ -13,7 +13,7 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://hackathon-i-physical-ai-book.vercel.app',
   baseUrl: '/',
 
   organizationName: 'facebook',
