@@ -210,6 +210,7 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
 
 ## Active Technologies
+- Python, requests, beautifulsoup4, cohere, qdrant-client, python-dotenv + Docusaurus content extraction, Cohere embeddings, Qdrant vector storage (005-rag-pipeline-ingestion)
 - Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, Gazebo simulation environment, Unity game engine (002-digital-twin-gazebo-unity)
 - Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, OpenAI Whisper, ROS 2, NVIDIA Isaac SDK, Isaac Sim (004-vla-physical-ai)
 - N/A (Documentation content) (004-vla-physical-ai)
