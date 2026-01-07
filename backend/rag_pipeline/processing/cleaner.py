@@ -1,6 +1,6 @@
 import re
 from typing import List, Union
-from ...utils.helpers import clean_text
+from backend.rag_pipeline.utils.helpers import clean_text
 
 
 class TextCleaner:

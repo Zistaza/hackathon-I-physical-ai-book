@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from typing import List, Optional, Dict, Any
 import re
 from urllib.parse import urlparse
-from ...models.data import ContentChunk
+from backend.rag_pipeline.models.data import ContentChunk
 
 
 class DocusaurusParser:

@@ -1,8 +1,8 @@
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from typing import List, Optional, Dict, Any
-from ...models.data import EmbeddingVector, ContentChunk
-from ...config.settings import load_config
+from backend.rag_pipeline.models.data import EmbeddingVector, ContentChunk
+from backend.rag_pipeline.config.settings import load_config
 import hashlib
 
 
@@ -41,13 +41,25 @@ class QdrantStorage:
         """
         try:
             # Try to get collection info
-            self.client.get_collection(self.collection_name)
+            collection_info = self.client.get_collection(self.collection_name)
+            # If collection exists but has wrong vector size, we need to recreate it
+            if collection_info.config.params.vectors.size != 768:
+                print(f"Collection has wrong vector size ({collection_info.config.params.vectors.size}), recreating...")
+                self.client.delete_collection(self.collection_name)
+                self.client.create_collection(
+                    collection_name=self.collection_name,
+                    vectors_config=models.VectorParams(
+                        size=768,  # Updated to match Cohere's actual embedding dimensions (768 for the model being used)
+                        distance=models.Distance.COSINE
+                    )
+                )
         except Exception:
             # Collection doesn't exist, create it
+            # Using 768 dimensions based on the actual embedding size returned by the API
             self.client.create_collection(
                 collection_name=self.collection_name,
                 vectors_config=models.VectorParams(
-                    size=4096,  # Cohere embeddings are typically 4096 dimensions for some models
+                    size=768,  # Actual embedding dimension being returned
                     distance=models.Distance.COSINE
                 )
             )
@@ -64,17 +76,31 @@ class QdrantStorage:
             True if successful, False otherwise
         """
         try:
+            # Use the content_chunk.id as a reference in payload but generate a valid Qdrant ID
+            # Qdrant requires IDs to be either unsigned integers or UUIDs, so we'll use a hash
+            # that we convert to an integer or use as UUID
+
+            # Convert the chunk ID to a valid Qdrant ID (use the last 16 hex chars as int)
+            # Since chunk.id is a SHA256 hash, we can convert part of it to int
+            try:
+                # Take the first 16 hex characters and convert to int
+                qdrant_id = int(content_chunk.id[:16], 16) % (2**63)  # Ensure it fits in signed 64-bit int
+            except ValueError:
+                # If conversion fails, generate a numeric ID
+                import hashlib
+                qdrant_id = int(hashlib.md5(content_chunk.id.encode()).hexdigest()[:16], 16) % (2**63)
+
             # Check if this chunk already exists to maintain idempotency
-            if self.check_duplicate(content_chunk.id):
-                print(f"Chunk with ID {content_chunk.id} already exists in Qdrant, skipping...")
+            if self.check_duplicate_by_content_hash(content_chunk.content_hash):
+                print(f"Chunk with content hash {content_chunk.content_hash} already exists in Qdrant, skipping...")
                 return True  # Consider this a success since it already exists
 
             # Prepare the point to insert
             point = models.PointStruct(
-                id=content_chunk.id,  # Use the chunk ID as the point ID
+                id=qdrant_id,  # Use a valid Qdrant ID
                 vector=embedding.vector,
                 payload={
-                    "chunk_id": content_chunk.id,
+                    "chunk_id": content_chunk.id,  # Original chunk ID in payload
                     "content": content_chunk.content,
                     "source_url": content_chunk.source_url,
                     "module": content_chunk.module,
@@ -122,16 +148,25 @@ class QdrantStorage:
         for embedding, chunk in zip(embeddings, content_chunks):
             try:
                 # Check if this chunk already exists to maintain idempotency
-                if self.check_duplicate(chunk.id):
-                    print(f"Chunk with ID {chunk.id} already exists in Qdrant, skipping...")
+                if self.check_duplicate_by_content_hash(chunk.content_hash):
+                    print(f"Chunk with content hash {chunk.content_hash} already exists in Qdrant, skipping...")
                     results["successful"] += 1
                     continue
 
+                # Convert the chunk ID to a valid Qdrant ID
+                try:
+                    # Take the first 16 hex characters and convert to int
+                    qdrant_id = int(chunk.id[:16], 16) % (2**63)  # Ensure it fits in signed 64-bit int
+                except ValueError:
+                    # If conversion fails, generate a numeric ID
+                    import hashlib
+                    qdrant_id = int(hashlib.md5(chunk.id.encode()).hexdigest()[:16], 16) % (2**63)
+
                 point = models.PointStruct(
-                    id=chunk.id,  # Use the chunk ID as the point ID
+                    id=qdrant_id,  # Use a valid Qdrant ID
                     vector=embedding.vector,
                     payload={
-                        "chunk_id": chunk.id,
+                        "chunk_id": chunk.id,  # Original chunk ID in payload
                         "content": chunk.content,
                         "source_url": chunk.source_url,
                         "module": chunk.module,
@@ -161,21 +196,57 @@ class QdrantStorage:
 
         return results
 
-    def check_duplicate(self, chunk_id: str) -> bool:
+    def check_duplicate_by_content_hash(self, content_hash: str) -> bool:
         """
-        Check if a chunk already exists in storage
+        Check if a chunk with the given content hash already exists in storage
 
         Args:
-            chunk_id: ID of the chunk to check
+            content_hash: Hash of the content to check
 
         Returns:
             True if chunk exists, False otherwise
         """
         try:
-            # Try to retrieve the point by ID
+            # Use scroll to find records with the given content hash in the payload
+            records, _ = self.client.scroll(
+                collection_name=self.collection_name,
+                scroll_filter=models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="content_hash",
+                            match=models.MatchValue(value=content_hash)
+                        )
+                    ]
+                ),
+                limit=1
+            )
+            return len(records) > 0
+        except Exception:
+            # If there's an error, assume it doesn't exist
+            return False
+
+    def check_duplicate(self, chunk_id: str) -> bool:
+        """
+        Check if a chunk already exists in storage (by original chunk ID)
+
+        Args:
+            chunk_id: Original chunk ID to check
+
+        Returns:
+            True if chunk exists, False otherwise
+        """
+        try:
+            # Convert chunk_id to the Qdrant ID format to check if it exists
+            try:
+                qdrant_id = int(chunk_id[:16], 16) % (2**63)
+            except ValueError:
+                import hashlib
+                qdrant_id = int(hashlib.md5(chunk_id.encode()).hexdigest()[:16], 16) % (2**63)
+
+            # Try to retrieve the point by the converted ID
             records = self.client.retrieve(
                 collection_name=self.collection_name,
-                ids=[chunk_id]
+                ids=[qdrant_id]
             )
             return len(records) > 0
         except Exception:

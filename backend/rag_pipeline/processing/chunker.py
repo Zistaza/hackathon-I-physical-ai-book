@@ -1,6 +1,6 @@
 from typing import List, Tuple
-from ...models.data import ContentChunk
-from ...utils.helpers import generate_chunk_id
+from backend.rag_pipeline.models.data import ContentChunk
+from backend.rag_pipeline.utils.helpers import generate_chunk_id
 import re
 
 
@@ -140,7 +140,7 @@ class ContentChunker:
 
                 # If the sentence itself is too large, split it by character count
                 if len(sentence) > self.max_chunk_size:
-                    char_chunks = self._split_by_character_count(sentence)
+                    char_chunks = self._split_large_chunk(sentence)
                     chunks.extend(char_chunks)
                     current_chunk = ""
                 else:
