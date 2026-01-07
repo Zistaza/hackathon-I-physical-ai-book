@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from typing import List, Optional
 from urllib.parse import urljoin, urlparse
 import time
-from ...utils.helpers import retry_on_failure
+from backend.rag_pipeline.utils.helpers import retry_on_failure
 
 
 class DocusaurusCrawler:

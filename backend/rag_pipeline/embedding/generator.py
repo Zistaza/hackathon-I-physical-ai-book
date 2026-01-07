@@ -1,7 +1,7 @@
 import cohere
 from typing import List, Union
-from ...models.data import EmbeddingVector, ContentChunk
-from ...config.settings import load_config
+from backend.rag_pipeline.models.data import EmbeddingVector, ContentChunk
+from backend.rag_pipeline.config.settings import load_config
 
 
 class CohereEmbedder:
@@ -50,12 +50,17 @@ class CohereEmbedder:
         embedding_vector = response.embeddings[0]
 
         # Create and return EmbeddingVector object
+        # We set chunk_id to a temporary value to pass validation, it will be overwritten later
+        from datetime import datetime
+        import hashlib
+        temp_id = hashlib.sha256((text + str(datetime.now().timestamp())).encode()).hexdigest()[:16]
+
         return EmbeddingVector(
-            chunk_id="",  # Will be set when associated with a ContentChunk
+            chunk_id=temp_id,  # Temporary ID to pass validation
             vector=embedding_vector,
             model_name=self.model_name,
             model_version=None,  # Cohere doesn't typically provide version in response
-            created_at=None  # Will be set by model validation
+            created_at=datetime.now()  # Set current time to pass validation
         )
 
     def batch_generate_embeddings(self, texts: List[str]) -> List[EmbeddingVector]:
@@ -84,14 +89,18 @@ class CohereEmbedder:
         )
 
         # Create EmbeddingVector objects for each embedding
+        from datetime import datetime
+        import hashlib
         embeddings = []
         for i, embedding_vector in enumerate(response.embeddings):
+            # Generate a temporary ID to pass validation
+            temp_id = hashlib.sha256((non_empty_texts[i] + str(datetime.now().timestamp())).encode()).hexdigest()[:16]
             embedding = EmbeddingVector(
-                chunk_id="",  # Will be set when associated with a ContentChunk
+                chunk_id=temp_id,  # Temporary ID to pass validation
                 vector=embedding_vector,
                 model_name=self.model_name,
                 model_version=None,
-                created_at=None  # Will be set by model validation
+                created_at=datetime.now()  # Set current time to pass validation
             )
             embeddings.append(embedding)
 
@@ -132,6 +141,22 @@ class CohereEmbedder:
         Returns:
             EmbeddingVector object with proper chunk_id reference
         """
-        embedding = self.generate_embedding(content_chunk.content)
-        embedding.chunk_id = content_chunk.id
-        return embedding
+        # Generate embedding using Cohere
+        response = self.client.embed(
+            texts=[content_chunk.content],
+            model=self.model_name,
+            input_type="search_document"
+        )
+
+        # Extract the embedding vector
+        embedding_vector = response.embeddings[0]
+
+        # Create and return EmbeddingVector object with proper chunk_id
+        from datetime import datetime
+        return EmbeddingVector(
+            chunk_id=content_chunk.id,
+            vector=embedding_vector,
+            model_name=self.model_name,
+            model_version=None,
+            created_at=datetime.now()
+        )
