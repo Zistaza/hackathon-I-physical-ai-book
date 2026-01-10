@@ -381,21 +381,30 @@ class RAGAgent:
                 if 'chunks' in result_data:
                     for chunk in result_data['chunks']:
                         # Add to retrieved chunks used
+                        # Helper function to safely extract values, treating empty strings as None
+                        def safe_get(data_dict, key, default=None):
+                            value = data_dict.get(key, default)
+                            return value if value else default
+
                         retrieved_chunk = RetrievedChunk(
                             text=chunk['text'],
                             score=chunk['score'],
-                            source_url=chunk['metadata'].get('source_url', ''),
-                            module=chunk['metadata'].get('module', ''),
-                            chapter=chunk['metadata'].get('chapter', ''),
-                            chunk_index=chunk['metadata'].get('chunk_index', 0)
+                            source_url=safe_get(chunk['metadata'], 'source_url'),
+                            module=safe_get(chunk['metadata'], 'module'),
+                            chapter=safe_get(chunk['metadata'], 'chapter'),
+                            chunk_index=safe_get(chunk['metadata'], 'chunk_index')
                         )
                         retrieved_chunks_used.append(retrieved_chunk)
 
                         # Add to citations if not already present
                         citation = {
-                            'source_url': chunk['metadata'].get('source_url', ''),
-                            'module': chunk['metadata'].get('module', ''),
-                            'chapter': chunk['metadata'].get('chapter', '')
+                            'source_url': safe_get(chunk['metadata'], 'source_url'),
+                            'module': safe_get(chunk['metadata'], 'module'),
+                            'chapter': safe_get(chunk['metadata'], 'chapter'),
+                            'section': safe_get(chunk['metadata'], 'section'),
+                            'page_number': safe_get(chunk['metadata'], 'page_number'),
+                            'paragraph_number': safe_get(chunk['metadata'], 'paragraph_number'),
+                            'citation_type': safe_get(chunk['metadata'], 'citation_type')
                         }
                         if citation not in citations:
                             citations.append(citation)

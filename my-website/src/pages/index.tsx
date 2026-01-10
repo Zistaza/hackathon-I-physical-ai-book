@@ -6,6 +6,7 @@ import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
+import RagChatbot from '../components/RagChatbot';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
@@ -209,6 +210,9 @@ export default function Home(): ReactNode {
       description="Bridging Digital Brain to Physical Body - Comprehensive course on Physical AI and Humanoid Robotics">
       <HomepageHeader />
       <main>
+        <div className="container margin-vert--lg">
+          <RagChatbot />
+        </div>
         <ModulesSection />
         <HardwareSection />
       </main>

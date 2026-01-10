@@ -218,6 +218,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 - N/A (static content) (001-homepage-update)
 - CSS3, compatible with Docusaurus 3.x + Docusaurus 3.x framework, React components (001-docusaurus-style-enhancement)
 - N/A (CSS styling only) (001-docusaurus-style-enhancement)
+- Python 3.11, TypeScript for frontend integration + FastAPI, OpenAI SDK, Cohere SDK, Qdrant Client, Pydantic, uvicorn (008-rag-backend-frontend-integration)
+- Qdrant Cloud (Free Tier) for vector storage, optional Neon Serverless Postgres for session metadata (008-rag-backend-frontend-integration)
 
 ## Recent Changes
 - 002-digital-twin-gazebo-unity: Added Markdown, Docusaurus-compatible syntax + Docusaurus documentation framework, Gazebo simulation environment, Unity game engine
